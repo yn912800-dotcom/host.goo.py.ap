@@ -1,0 +1,13 @@
+FROM node:22-bookworm-slim
+WORKDIR /worker
+# The worker talks to a Docker Engine on its dedicated host through the Docker CLI.
+# No Docker socket or host filesystem is mounted by this image; configure the host
+# with a secured private transport if remote Docker is required.
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends docker.io ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+COPY worker/server.mjs ./server.mjs
+ENV NODE_ENV=production
+EXPOSE 8787
+USER node
+CMD ["node", "server.mjs"]
